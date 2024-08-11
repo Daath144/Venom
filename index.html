@@ -1,7 +1,7 @@
 <html><head><base href="https://www.youtube.com/watch?v=Hra6hm7mMdI">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>daath144's Insane YouTube Extravaganza</title>
+<title>daath144's Transparent Matrix Extravaganza (Revised)</title>
 <style>
   body, html {
     margin: 0;
@@ -10,6 +10,14 @@
     overflow: hidden;
     background-color: #000;
     cursor: none;
+  }
+  #matrix-rain {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
   }
   .video-container {
     position: fixed;
@@ -20,46 +28,45 @@
     height: 45vw;
     max-width: 800px;
     max-height: 450px;
-    box-shadow: 0 0 50px #00ff00;
+    box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
     animation: pulse 2s infinite alternate;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
   }
   .video-container iframe {
     width: 100%;
     height: 100%;
     border: none;
+    opacity: 0.8;
   }
   @keyframes pulse {
-    0% { box-shadow: 0 0 50px #00ff00; }
-    100% { box-shadow: 0 0 100px #ff00ff; }
+    0% { box-shadow: 0 0 50px rgba(0, 255, 0, 0.5); }
+    100% { box-shadow: 0 0 100px rgba(255, 0, 255, 0.5); }
   }
   #custom-cursor {
     position: fixed;
     pointer-events: none;
     z-index: 9999;
   }
-  .tentacle {
-    position: fixed;
-    background: linear-gradient(to right, #000, #333);
-    transform-origin: 0 50%;
-    z-index: -1;
-  }
   #crazy-text {
     position: fixed;
     font-family: 'Arial', sans-serif;
     font-size: 24px;
-    color: #ff00ff;
-    text-shadow: 2px 2px #00ff00;
+    color: rgba(255, 0, 255, 0.8);
+    text-shadow: 2px 2px rgba(0, 255, 0, 0.8);
     pointer-events: none;
+    z-index: 2;
   }
 </style>
 </head>
 <body>
+  <canvas id="matrix-rain"></canvas>
   <div class="video-container">
     <iframe src="https://www.youtube.com/embed/Hra6hm7mMdI?autoplay=1&controls=0&showinfo=0&autohide=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
   </div>
   <svg id="custom-cursor" width="50" height="50" viewBox="0 0 50 50">
-    <text x="25" y="25" font-family="Arial" font-size="10" fill="#00ff00" text-anchor="middle" dominant-baseline="middle">daath144</text>
-    <circle cx="25" cy="25" r="20" fill="none" stroke="#ff00ff" stroke-width="2" />
+    <text x="25" y="25" font-family="Arial" font-size="10" fill="rgba(0, 255, 0, 0.8)" text-anchor="middle" dominant-baseline="middle">daath144</text>
+    <circle cx="25" cy="25" r="20" fill="none" stroke="rgba(255, 0, 255, 0.8)" stroke-width="2" />
   </svg>
   <div id="crazy-text"></div>
 
@@ -70,31 +77,46 @@ const crazyText = document.getElementById('crazy-text');
 const body = document.body;
 const videoContainer = document.querySelector('.video-container');
 
+// Matrix Rain
+const canvas = document.getElementById('matrix-rain');
+const ctx = canvas.getContext('2d');
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+{}[]|;:,.<>?';
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+
+const drops = [];
+for (let i = 0; i < columns; i++) {
+  drops[i] = 1;
+}
+
+function drawMatrixRain() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = '#0f0';
+  ctx.font = fontSize + 'px monospace';
+
+  for (let i = 0; i < drops.length; i++) {
+    const text = characters.charAt(Math.floor(Math.random() * characters.length));
+    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+    drops[i]++;
+  }
+}
+
+setInterval(drawMatrixRain, 33);
+
 // Custom cursor follow
 document.addEventListener('mousemove', (e) => {
   gsap.to(cursor, {duration: 0.3, left: e.clientX - 25, top: e.clientY - 25});
 });
-
-// Create tentacles
-for (let i = 0; i < 5; i++) {
-  const tentacle = document.createElement('div');
-  tentacle.classList.add('tentacle');
-  body.appendChild(tentacle);
-  
-  gsap.set(tentacle, {
-    width: '200px',
-    height: '10px',
-    left: Math.random() * window.innerWidth,
-    top: Math.random() * window.innerHeight
-  });
-
-  gsap.to(tentacle, {
-    rotation: 360,
-    duration: 10 + Math.random() * 5,
-    repeat: -1,
-    ease: 'none'
-  });
-}
 
 // Crazy text
 const crazyWords = ['daath144', 'AWESOME', 'COOL', 'RADICAL', 'EPIC'];
@@ -130,18 +152,8 @@ document.addEventListener('click', () => {
   });
 
   gsap.to('body', {
-    backgroundColor: () => `hsl(${Math.random() * 360}, 100%, 50%)`,
+    backgroundColor: () => `hsla(${Math.random() * 360}, 100%, 50%, 0.3)`,
     duration: 0.5
-  });
-
-  const shakeStrength = 40;
-  gsap.to('.tentacle', {
-    x: `+=${Math.random() * shakeStrength - shakeStrength/2}`,
-    y: `+=${Math.random() * shakeStrength - shakeStrength/2}`,
-    rotation: `+=${Math.random() * 180 - 90}`,
-    duration: 0.2,
-    repeat: 10,
-    yoyo: true
   });
 
   // Add exploding daath144 text
@@ -150,8 +162,8 @@ document.addEventListener('click', () => {
   explosion.style.left = '50%';
   explosion.style.top = '50%';
   explosion.style.fontSize = '100px';
-  explosion.style.color = '#ff00ff';
-  explosion.style.textShadow = '0 0 10px #00ff00';
+  explosion.style.color = 'rgba(255, 0, 255, 0.8)';
+  explosion.style.textShadow = '0 0 10px rgba(0, 255, 0, 0.8)';
   explosion.style.pointerEvents = 'none';
   explosion.innerText = 'daath144';
   document.body.appendChild(explosion);
@@ -172,7 +184,7 @@ document.addEventListener('mousemove', (e) => {
   trail.style.width = '10px';
   trail.style.height = '10px';
   trail.style.borderRadius = '50%';
-  trail.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+  trail.style.backgroundColor = `hsla(${Math.random() * 360}, 100%, 50%, 0.5)`;
   trail.style.left = e.clientX + 'px';
   trail.style.top = e.clientY + 'px';
   trail.style.pointerEvents = 'none';
