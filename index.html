@@ -1,0 +1,190 @@
+<html><head><base href="https://www.youtube.com/watch?v=Hra6hm7mMdI">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>daath144's Insane YouTube Extravaganza</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+    background-color: #000;
+    cursor: none;
+  }
+  .video-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80vw;
+    height: 45vw;
+    max-width: 800px;
+    max-height: 450px;
+    box-shadow: 0 0 50px #00ff00;
+    animation: pulse 2s infinite alternate;
+  }
+  .video-container iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 50px #00ff00; }
+    100% { box-shadow: 0 0 100px #ff00ff; }
+  }
+  #custom-cursor {
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .tentacle {
+    position: fixed;
+    background: linear-gradient(to right, #000, #333);
+    transform-origin: 0 50%;
+    z-index: -1;
+  }
+  #crazy-text {
+    position: fixed;
+    font-family: 'Arial', sans-serif;
+    font-size: 24px;
+    color: #ff00ff;
+    text-shadow: 2px 2px #00ff00;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+  <div class="video-container">
+    <iframe src="https://www.youtube.com/embed/Hra6hm7mMdI?autoplay=1&controls=0&showinfo=0&autohide=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  </div>
+  <svg id="custom-cursor" width="50" height="50" viewBox="0 0 50 50">
+    <text x="25" y="25" font-family="Arial" font-size="10" fill="#00ff00" text-anchor="middle" dominant-baseline="middle">daath144</text>
+    <circle cx="25" cy="25" r="20" fill="none" stroke="#ff00ff" stroke-width="2" />
+  </svg>
+  <div id="crazy-text"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+<script>
+const cursor = document.getElementById('custom-cursor');
+const crazyText = document.getElementById('crazy-text');
+const body = document.body;
+const videoContainer = document.querySelector('.video-container');
+
+// Custom cursor follow
+document.addEventListener('mousemove', (e) => {
+  gsap.to(cursor, {duration: 0.3, left: e.clientX - 25, top: e.clientY - 25});
+});
+
+// Create tentacles
+for (let i = 0; i < 5; i++) {
+  const tentacle = document.createElement('div');
+  tentacle.classList.add('tentacle');
+  body.appendChild(tentacle);
+  
+  gsap.set(tentacle, {
+    width: '200px',
+    height: '10px',
+    left: Math.random() * window.innerWidth,
+    top: Math.random() * window.innerHeight
+  });
+
+  gsap.to(tentacle, {
+    rotation: 360,
+    duration: 10 + Math.random() * 5,
+    repeat: -1,
+    ease: 'none'
+  });
+}
+
+// Crazy text
+const crazyWords = ['daath144', 'AWESOME', 'COOL', 'RADICAL', 'EPIC'];
+setInterval(() => {
+  crazyText.innerText = crazyWords[Math.floor(Math.random() * crazyWords.length)];
+  crazyText.style.left = Math.random() * window.innerWidth + 'px';
+  crazyText.style.top = Math.random() * window.innerHeight + 'px';
+  crazyText.style.transform = `rotate(${Math.random() * 360}deg)`;
+}, 1000);
+
+// Make video container go crazy
+function craziness() {
+  gsap.to(videoContainer, {
+    rotation: () => Math.random() * 720 - 360,
+    x: () => Math.random() * 200 - 100,
+    y: () => Math.random() * 200 - 100,
+    scale: () => 0.8 + Math.random() * 0.4,
+    duration: 2,
+    ease: 'elastic.out(1, 0.3)',
+    onComplete: craziness
+  });
+}
+
+craziness();
+
+// Make everything go even crazier on click
+document.addEventListener('click', () => {
+  gsap.to(videoContainer, {
+    rotation: 720,
+    scale: 1.5,
+    duration: 1,
+    ease: 'elastic.out(1, 0.3)'
+  });
+
+  gsap.to('body', {
+    backgroundColor: () => `hsl(${Math.random() * 360}, 100%, 50%)`,
+    duration: 0.5
+  });
+
+  const shakeStrength = 40;
+  gsap.to('.tentacle', {
+    x: `+=${Math.random() * shakeStrength - shakeStrength/2}`,
+    y: `+=${Math.random() * shakeStrength - shakeStrength/2}`,
+    rotation: `+=${Math.random() * 180 - 90}`,
+    duration: 0.2,
+    repeat: 10,
+    yoyo: true
+  });
+
+  // Add exploding daath144 text
+  const explosion = document.createElement('div');
+  explosion.style.position = 'fixed';
+  explosion.style.left = '50%';
+  explosion.style.top = '50%';
+  explosion.style.fontSize = '100px';
+  explosion.style.color = '#ff00ff';
+  explosion.style.textShadow = '0 0 10px #00ff00';
+  explosion.style.pointerEvents = 'none';
+  explosion.innerText = 'daath144';
+  document.body.appendChild(explosion);
+
+  gsap.fromTo(explosion, 
+    {scale: 0, opacity: 1},
+    {scale: 5, opacity: 0, duration: 1.5, ease: 'power2.out', onComplete: () => explosion.remove()}
+  );
+});
+
+// Add a wild mouse trail effect
+const trailContainer = document.createElement('div');
+document.body.appendChild(trailContainer);
+
+document.addEventListener('mousemove', (e) => {
+  const trail = document.createElement('div');
+  trail.style.position = 'fixed';
+  trail.style.width = '10px';
+  trail.style.height = '10px';
+  trail.style.borderRadius = '50%';
+  trail.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+  trail.style.left = e.clientX + 'px';
+  trail.style.top = e.clientY + 'px';
+  trail.style.pointerEvents = 'none';
+  trailContainer.appendChild(trail);
+
+  gsap.to(trail, {
+    scale: 0,
+    opacity: 0,
+    duration: 1,
+    onComplete: () => trail.remove()
+  });
+});
+</script>
+</body>
+</html>
